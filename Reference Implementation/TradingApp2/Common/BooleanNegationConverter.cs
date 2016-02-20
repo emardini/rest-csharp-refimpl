@@ -1,13 +1,16 @@
-﻿using System;
-using Windows.UI.Xaml.Data;
-
-namespace TradingApp2.Common
+﻿namespace TradingApp2.Common
 {
+    using System;
+
+    using Windows.UI.Xaml.Data;
+
     /// <summary>
-    /// Value converter that translates true to false and vice versa.
+    ///     Value converter that translates true to false and vice versa.
     /// </summary>
     public sealed class BooleanNegationConverter : IValueConverter
     {
+        #region Public Methods and Operators
+
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             return !(value is bool && (bool)value);
@@ -17,5 +20,7 @@ namespace TradingApp2.Common
         {
             return !(value is bool && (bool)value);
         }
+
+        #endregion
     }
 }

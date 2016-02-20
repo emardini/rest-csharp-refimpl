@@ -1,93 +1,124 @@
-﻿using System;
-using System.Text;
-using TradingApp2.Data;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-using System.Reflection;
-
-namespace TradingApp2.TradeLibrary.DataModels
+﻿namespace TradingApp2.TradeLibrary.DataModels
 {
+    using System;
+    using System.Text;
+
+    using OANDARestLibrary.TradeLibrary.DataTypes;
+
+    using TradingApp2.Data;
+
     public class OrderViewModel : DataItem
     {
+        #region Fields
+
+        protected Order _model;
+
+        #endregion
+
+        #region Constructors and Destructors
+
         public OrderViewModel(Order data, DataGroup group)
             : base(group)
         {
-            _model = data;
+            this._model = data;
         }
-        protected Order _model;
 
-        public override string UniqueId
-        {
-            get
-            {
-                return Id.ToString();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
-        public override string Title
-        {
-            get
-            {
-                return Side + " " + Instrument + " " + Units;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
-        public override string Subtitle
-        {
-            get
-            {
-                return Price + " : " + TakeProfit + "/" + StopLoss;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
+        #endregion
+
+        #region Public Properties
 
         public override string Content
         {
             get
             {
-                StringBuilder result = new StringBuilder();
-                result.AppendLine("Id : " + Id);
-                result.AppendLine("Type : " + Type);
-                result.AppendLine("Side : " + Side);
-                result.AppendLine("Instrument : " + Instrument);
-                result.AppendLine("Units : " + Units);
-                result.AppendLine("Time : " + Time);
-                result.AppendLine("Price : " + Price);
-                result.AppendLine("TakeProfit : " + TakeProfit);
-                result.AppendLine("StopLoss : " + StopLoss);
-                result.AppendLine("Expiry : " + Expiry);
-				result.AppendLine("UpperBound : " + UpperBound);
-				result.AppendLine("LowerBound : " + LowerBound);
-                result.AppendLine("TrailingStop : " + TrailingStop);
+                var result = new StringBuilder();
+                result.AppendLine("Id : " + this.Id);
+                result.AppendLine("Type : " + this.Type);
+                result.AppendLine("Side : " + this.Side);
+                result.AppendLine("Instrument : " + this.Instrument);
+                result.AppendLine("Units : " + this.Units);
+                result.AppendLine("Time : " + this.Time);
+                result.AppendLine("Price : " + this.Price);
+                result.AppendLine("TakeProfit : " + this.TakeProfit);
+                result.AppendLine("StopLoss : " + this.StopLoss);
+                result.AppendLine("Expiry : " + this.Expiry);
+                result.AppendLine("UpperBound : " + this.UpperBound);
+                result.AppendLine("LowerBound : " + this.LowerBound);
+                result.AppendLine("TrailingStop : " + this.TrailingStop);
 
                 return result.ToString();
             }
-            set
-            {
-                base.Content = value;
-            }
+            set { base.Content = value; }
+        }
+        public string Expiry
+        {
+            get { return this._model.expiry; }
         }
 
-        public long Id { get { return _model.id; } }
-        public string Type { get { return _model.type; } }
-        public string Side { get { return _model.side; } }
-        public string Instrument { get { return _model.instrument; } }
-        public int Units { get { return _model.units; } }
-        public string Time { get { return _model.time; } }
-        public double Price { get { return _model.price; } }
-        public double TakeProfit { get { return _model.takeProfit; } }
-        public double StopLoss { get { return _model.stopLoss; } }
-        public string Expiry { get { return _model.expiry; } }
-        public double UpperBound { get { return _model.upperBound; } }
-        public double LowerBound { get { return _model.lowerBound; } }
-        public int TrailingStop { get { return _model.trailingStop; } }
+        public long Id
+        {
+            get { return this._model.id; }
+        }
+        public string Instrument
+        {
+            get { return this._model.instrument; }
+        }
+        public double LowerBound
+        {
+            get { return this._model.lowerBound; }
+        }
+        public double Price
+        {
+            get { return this._model.price; }
+        }
+        public string Side
+        {
+            get { return this._model.side; }
+        }
+        public double StopLoss
+        {
+            get { return this._model.stopLoss; }
+        }
+        public override string Subtitle
+        {
+            get { return this.Price + " : " + this.TakeProfit + "/" + this.StopLoss; }
+            set { throw new NotSupportedException(); }
+        }
+        public double TakeProfit
+        {
+            get { return this._model.takeProfit; }
+        }
+        public string Time
+        {
+            get { return this._model.time; }
+        }
+        public override string Title
+        {
+            get { return this.Side + " " + this.Instrument + " " + this.Units; }
+            set { throw new NotSupportedException(); }
+        }
+        public int TrailingStop
+        {
+            get { return this._model.trailingStop; }
+        }
+        public string Type
+        {
+            get { return this._model.type; }
+        }
+        public override string UniqueId
+        {
+            get { return this.Id.ToString(); }
+            set { throw new NotSupportedException(); }
+        }
+        public int Units
+        {
+            get { return this._model.units; }
+        }
+        public double UpperBound
+        {
+            get { return this._model.upperBound; }
+        }
+
+        #endregion
     }
 }

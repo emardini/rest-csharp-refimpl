@@ -1,32 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications.Requests
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications.Requests
 {
-	abstract class AccountRequest : Request
-	{
-		private readonly int _accountId;
+    internal abstract class AccountRequest : Request
+    {
+        #region Fields
 
-		AccountRequest(int accountId)
-		{
-			_accountId = accountId;
-		}
+        private readonly int _accountId;
 
-		public override string EndPoint
-		{
-			get { return "/accounts/" + _accountId + GetAccountEndPoint(); }
-		}
+        #endregion
 
-		protected abstract string GetAccountEndPoint();
-		
-		public override EServer GetServer()
-		{
-			return EServer.Account;
-		}
+        #region Constructors and Destructors
 
+        private AccountRequest(int accountId)
+        {
+            this._accountId = accountId;
+        }
 
-	}
+        #endregion
+
+        #region Public Properties
+
+        public override string EndPoint
+        {
+            get { return "/accounts/" + this._accountId + this.GetAccountEndPoint(); }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override EServer GetServer()
+        {
+            return EServer.Account;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected abstract string GetAccountEndPoint();
+
+        #endregion
+    }
 }

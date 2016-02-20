@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-
-namespace TradeLibrary.DataModels
+﻿namespace TradeLibrary.DataModels
 {
+    using System.Collections.Generic;
+
+    using OANDARestLibrary.TradeLibrary.DataTypes;
+
     public class UserData
     {
-        public List<Account> Accounts { get; private set;  }
+        #region Public Properties
+
+        public List<Account> Accounts { get; private set; }
+
+        #endregion
 
         //public AccountData SelectedAccount { get; }
     }

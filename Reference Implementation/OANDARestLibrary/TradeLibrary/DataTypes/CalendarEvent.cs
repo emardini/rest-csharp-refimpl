@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-	public class CalendarEvent
-	{
-		public string title;
-		public string timestamp;
-		public string unit;
-		public string currency;
-		public string forecast;
-		public string previous;
-		public string actual;
-		public string market;
-	}
+    public class CalendarEvent
+    {
+        #region Fields
+
+        public string actual;
+
+        public string currency;
+
+        public string forecast;
+
+        public string market;
+
+        public string previous;
+
+        public string timestamp;
+
+        public string title;
+
+        public string unit;
+
+        #endregion
+    }
 }

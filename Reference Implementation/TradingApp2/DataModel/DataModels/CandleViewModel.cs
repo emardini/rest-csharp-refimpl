@@ -1,80 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TradingApp2.Data;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-using System.Reflection;
-
-namespace TradingApp2.TradeLibrary.DataModels
+﻿namespace TradingApp2.TradeLibrary.DataModels
 {
+    using System;
+    using System.Collections.Generic;
+
+    using OANDARestLibrary.TradeLibrary.DataTypes;
+
+    using TradingApp2.Data;
+
     public class CandleViewModel : DataItem
     {
+        #region Fields
+
+        private Candle _model;
+
+        #endregion
+
+        #region Constructors and Destructors
+
         public CandleViewModel(Candle data, DataGroup group)
             : base(group)
         {
-            _model = data;
+            this._model = data;
         }
-        private Candle _model;
 
-        public override string UniqueId
+        #endregion
+
+        #region Public Properties
+
+        public double CloseMid
         {
-            get
-            {
-                return Time.ToString();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this._model.closeMid; }
         }
-        public override string Title
+        public bool Complete
         {
-            get
-            {
-                return OpenMid + " / " + CloseMid;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
-        public override string Subtitle
-        {
-            get
-            {
-                return HighMid + " / " + LowMid;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this._model.complete; }
         }
 
         public override string Content
         {
-            get { return "Time: " + Time; }
-            set
-            {
-                base.Content = value;
-            }
+            get { return "Time: " + this.Time; }
+            set { base.Content = value; }
         }
 
+        public double HighMid
+        {
+            get { return this._model.highMid; }
+        }
+        public double LowMid
+        {
+            get { return this._model.lowMid; }
+        }
+        public double OpenMid
+        {
+            get { return this._model.openMid; }
+        }
+        public override string Subtitle
+        {
+            get { return this.HighMid + " / " + this.LowMid; }
+            set { throw new NotSupportedException(); }
+        }
+        public string Time
+        {
+            get { return this._model.time; }
+        }
+        public override string Title
+        {
+            get { return this.OpenMid + " / " + this.CloseMid; }
+            set { throw new NotSupportedException(); }
+        }
+        public override string UniqueId
+        {
+            get { return this.Time; }
+            set { throw new NotSupportedException(); }
+        }
         public List<double> YValues
         {
-            get { return new List<double>() {OpenMid, HighMid, LowMid, CloseMid};}
+            get { return new List<double> { this.OpenMid, this.HighMid, this.LowMid, this.CloseMid }; }
         }
 
-        //public int Id { get { return _model.id; } }
-        //public string Type { get { return _model.type; } }
-        //public string Direction { get { return _model.direction; } }
-        //public string Instrument { get { return _model.instrument; } }
-        //public int Units { get { return _model.units; } }
-        public string Time { get { return _model.time; } }
-        public double OpenMid { get { return _model.openMid; } }
-        public double HighMid { get { return _model.highMid; } }
-        public double LowMid { get { return _model.lowMid; } }
-        public double CloseMid { get { return _model.closeMid; } }
-        public bool Complete { get { return _model.complete; } }
+        #endregion
+
         //public double StopLoss { get { return _model.stopLoss; } }
         //public long Expiry { get { return _model.expiry; } }
         //public double HighLimit { get { return _model.highLimit; } }

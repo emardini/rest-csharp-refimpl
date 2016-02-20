@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.Framework
+﻿namespace OANDARestLibrary.Framework
 {
-	public class Common
-	{
-		public static object GetDefault(Type t)
-		{
-			return typeof(Common).GetTypeInfo().GetDeclaredMethod("GetDefaultGeneric").MakeGenericMethod(t).Invoke(null, null);
-		}
+    using System;
+    using System.Reflection;
 
-		public static T GetDefaultGeneric<T>()
-		{
-			return default(T);
-		}
-	}
+    public class Common
+    {
+        #region Public Methods and Operators
+
+        public static object GetDefault(Type t)
+        {
+            return typeof(Common).GetTypeInfo().GetDeclaredMethod("GetDefaultGeneric").MakeGenericMethod(t).Invoke(null, null);
+        }
+
+        public static T GetDefaultGeneric<T>()
+        {
+            return default(T);
+        }
+
+        #endregion
+    }
 }

@@ -1,45 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
     public class Price
     {
+        #region Fields
+
+        public State state = State.Default;
+
+        public string status;
+
+        public string time;
+
+        #endregion
+
+        #region Enums
+
         public enum State
         {
             Default,
+
             Increasing,
+
             Decreasing
         };
 
-        public string instrument { get; set; }
-        public string time;
-        public double bid { get; set; }
-        public double ask { get; set; }
-	    public string status;
-        public State state = State.Default;
+        #endregion
 
-	    public void update( Price update )
+        #region Public Properties
+
+        public double ask { get; set; }
+
+        public double bid { get; set; }
+
+        public string instrument { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void update(Price update)
         {
-            if ( this.bid > update.bid )
+            if (this.bid > update.bid)
             {
-                state = State.Decreasing;
+                this.state = State.Decreasing;
             }
-            else if ( this.bid < update.bid )
+            else if (this.bid < update.bid)
             {
-                state = State.Increasing;
+                this.state = State.Increasing;
             }
             else
             {
-                state = State.Default;
+                this.state = State.Default;
             }
 
             this.bid = update.bid;
             this.ask = update.ask;
             this.time = update.time;
         }
+
+        #endregion
     }
 }

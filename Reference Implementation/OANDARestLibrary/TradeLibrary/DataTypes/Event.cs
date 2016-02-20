@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-	public class Event : IHeartbeat
-	{
-		public Heartbeat heartbeat { get; set; }
-		public Transaction transaction { get; set; }
-		public bool IsHeartbeat()
-		{
-			return (heartbeat != null);
-		}
-	}
+    public class Event : IHeartbeat
+    {
+        #region Public Properties
+
+        public Heartbeat heartbeat { get; set; }
+
+        public Transaction transaction { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public bool IsHeartbeat()
+        {
+            return (this.heartbeat != null);
+        }
+
+        #endregion
+    }
 }

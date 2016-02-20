@@ -1,117 +1,171 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OANDARestLibrary.TradeLibrary.DataTypes.Communications;
-using OANDARestLibrary.TradeLibrary.DataTypes.Communications.Requests;
-using TradingApp2.Data;
-using Microsoft.Practices.Prism.Commands;
-
-namespace TradingApp2.DataModel.DataModels
+﻿namespace TradingApp2.DataModel.DataModels
 {
-	/// <summary>
-	/// Storace for helper data to help make playing with requests more effective
-	/// </summary>
-	class RequestHelpers
-	{
-		public static long lastTradeId = 0;
-		public static long lastOrderId = 0;
-	}
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-	class OrderPostViewModel : RequestViewModel
-	{
-		public OrderPostViewModel(string name, DataGroup group, Dictionary<string, string> parameters ) 
-			: base(name, group)
-		{
-			requestParams = parameters;
-		}
+    using OANDARestLibrary;
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(async () =>
-				{
-					var result = await OANDARestLibrary.Rest.PostOrderAsync(AccountDataSource.DefaultDataSource.Id, requestParams);
-					if (result.tradeOpened != null)
-					{
-						RequestHelpers.lastTradeId = result.tradeOpened.id;
-					}
-					if (result.orderOpened != null)
-					{
-						RequestHelpers.lastOrderId = result.orderOpened.id;
-					}
-					return result;
-				} );
-		}
-	}
+    using TradingApp2.Data;
 
-	class OrderPatchViewModel : RequestViewModel
-	{
-		public OrderPatchViewModel(string name, DataGroup group, Dictionary<string, string> parameters)
-			: base(name, group)
-		{
-			requestParams = parameters;
-		}
+    /// <summary>
+    ///     Storace for helper data to help make playing with requests more effective
+    /// </summary>
+    internal class RequestHelpers
+    {
+        #region Static Fields
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(() => OANDARestLibrary.Rest.PatchOrderAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastOrderId, requestParams));
-		}
-	}
+        public static long lastOrderId = 0;
 
-	class OrderDeleteViewModel : RequestViewModel
-	{
-		public OrderDeleteViewModel(string name, DataGroup group)
-			: base(name, group)
-		{
-			requestParams = new Dictionary<string, string>();
-		}
+        public static long lastTradeId = 0;
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(() => OANDARestLibrary.Rest.DeleteOrderAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastOrderId));
-		}
-	}
+        #endregion
+    }
 
-	class TradePatchViewModel : RequestViewModel
-	{
-		public TradePatchViewModel(string name, DataGroup group, Dictionary<string, string> parameters)
-			: base(name, group)
-		{
-			requestParams = parameters;
-		}
+    internal class OrderPostViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(() => OANDARestLibrary.Rest.PatchTradeAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastTradeId, requestParams));
-		}
-	}
+        public OrderPostViewModel(string name, DataGroup group, Dictionary<string, string> parameters)
+            : base(name, group)
+        {
+            this.requestParams = parameters;
+        }
 
-	class TradeDeleteViewModel : RequestViewModel
-	{
-		public TradeDeleteViewModel(string name, DataGroup group)
-			: base(name, group)
-		{
-			requestParams = new Dictionary<string, string>();
-		}
+        #endregion
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(() => OANDARestLibrary.Rest.DeleteTradeAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastTradeId));
-		}
-	}
+        #region Public Methods and Operators
 
-	class PositionDeleteViewModel : RequestViewModel
-	{
-		public PositionDeleteViewModel(string name, DataGroup group, string instrument)
-			: base(name, group)
-		{
-			requestParams = new Dictionary<string, string>() { { "instrument", instrument } };
-		}
+        public override async Task MakeRequest()
+        {
+            await this.InternalMakeRequest(async () =>
+            {
+                var result = await Rest.PostOrderAsync(AccountDataSource.DefaultDataSource.Id, this.requestParams);
+                if (result.tradeOpened != null)
+                {
+                    RequestHelpers.lastTradeId = result.tradeOpened.id;
+                }
+                if (result.orderOpened != null)
+                {
+                    RequestHelpers.lastOrderId = result.orderOpened.id;
+                }
+                return result;
+            });
+        }
 
-		public override async Task MakeRequest()
-		{
-			await InternalMakeRequest(() => OANDARestLibrary.Rest.DeletePositionAsync(AccountDataSource.DefaultDataSource.Id, requestParams["instrument"]));
-		}
-	}
+        #endregion
+    }
+
+    internal class OrderPatchViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
+
+        public OrderPatchViewModel(string name, DataGroup group, Dictionary<string, string> parameters)
+            : base(name, group)
+        {
+            this.requestParams = parameters;
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override async Task MakeRequest()
+        {
+            await
+                this.InternalMakeRequest(
+                    () => Rest.PatchOrderAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastOrderId, this.requestParams));
+        }
+
+        #endregion
+    }
+
+    internal class OrderDeleteViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
+
+        public OrderDeleteViewModel(string name, DataGroup group)
+            : base(name, group)
+        {
+            this.requestParams = new Dictionary<string, string>();
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override async Task MakeRequest()
+        {
+            await this.InternalMakeRequest(() => Rest.DeleteOrderAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastOrderId));
+        }
+
+        #endregion
+    }
+
+    internal class TradePatchViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
+
+        public TradePatchViewModel(string name, DataGroup group, Dictionary<string, string> parameters)
+            : base(name, group)
+        {
+            this.requestParams = parameters;
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override async Task MakeRequest()
+        {
+            await
+                this.InternalMakeRequest(
+                    () => Rest.PatchTradeAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastTradeId, this.requestParams));
+        }
+
+        #endregion
+    }
+
+    internal class TradeDeleteViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
+
+        public TradeDeleteViewModel(string name, DataGroup group)
+            : base(name, group)
+        {
+            this.requestParams = new Dictionary<string, string>();
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override async Task MakeRequest()
+        {
+            await this.InternalMakeRequest(() => Rest.DeleteTradeAsync(AccountDataSource.DefaultDataSource.Id, RequestHelpers.lastTradeId));
+        }
+
+        #endregion
+    }
+
+    internal class PositionDeleteViewModel : RequestViewModel
+    {
+        #region Constructors and Destructors
+
+        public PositionDeleteViewModel(string name, DataGroup group, string instrument)
+            : base(name, group)
+        {
+            this.requestParams = new Dictionary<string, string> { { "instrument", instrument } };
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override async Task MakeRequest()
+        {
+            await this.InternalMakeRequest(() => Rest.DeletePositionAsync(AccountDataSource.DefaultDataSource.Id, this.requestParams["instrument"]));
+        }
+
+        #endregion
+    }
 }

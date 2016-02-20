@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TradeLibrary.DataModels;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-using TradingApp2.Data;
-
-namespace TradingApp2.TradeLibrary.DataModels
+﻿namespace TradingApp2.TradeLibrary.DataModels
 {
-    class Factory
+    using System;
+    using System.Collections.Generic;
+
+    using global::TradeLibrary.DataModels;
+
+    using OANDARestLibrary.TradeLibrary.DataTypes;
+
+    using TradingApp2.Data;
+
+    internal class Factory
     {
+        #region Public Methods and Operators
+
         public static List<DataItem> GetDataItems<T>(List<T> items, DataGroup group)
         {
             var list = new List<DataItem>();
@@ -25,7 +27,7 @@ namespace TradingApp2.TradeLibrary.DataModels
         {
             return new TradeViewModel(trade, group);
         }
-        
+
         public static DataItem GetViewModel(Order order, DataGroup group)
         {
             return new OrderViewModel(order, group);
@@ -50,5 +52,7 @@ namespace TradingApp2.TradeLibrary.DataModels
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

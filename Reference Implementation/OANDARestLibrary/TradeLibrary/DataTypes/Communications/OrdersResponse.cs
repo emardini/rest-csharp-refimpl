@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
 {
+    using System.Collections.Generic;
+
     public class OrdersResponse
     {
-        public List<Order> orders;
+        #region Fields
+
         public string nextPage;
+
+        public List<Order> orders;
+
+        #endregion
     }
 }

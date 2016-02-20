@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-	public class Heartbeat
-	{
-		public string time { get; set; }
-	}
+    public class Heartbeat
+    {
+        #region Public Properties
+
+        public string time { get; set; }
+
+        #endregion
+    }
 }

@@ -1,90 +1,153 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-	public class Signal
-	{
-		public Metadata meta;
-		public int id;
-		public string instrument;
-		public string type;
-		public Data data;
-		public Prediction prediction;
+    using System.Collections.Generic;
 
-		public class Metadata
-		{
-			public int completed;
-			public Scores scores;
-			public string patterntype;
-			public double probability;
-			public int interval;
-			public int direction;
-			public string pattern;
-			public int length;
-			public HistoricalStats historicalstats;
-			public string trendtype;
-		}
+    public class Signal
+    {
+        #region Fields
 
-		public class Scores
-		{
-			public int uniformity;
-			public int quality;
-			public int breakout;
-			public int initialtrend;
-			public int clarity;
-		}
+        public Data data;
 
-		public class Data
-		{
-			public double price;
-			public long patternendtime;
-			public Points points;
-		}
+        public int id;
 
-		public class Points
-		{
-			public Point resistance;
-			public Point support;
-			// Note: this doesn't appear to work
-			public Dictionary<int, long> keytime;
-		}
+        public string instrument;
 
-		public class Point
-		{
-			public long x0;
-			public long x1;
-			public double y0;
-			public double y1;
-		}
+        public Metadata meta;
 
-		public class Prediction
-		{
-			public long timeto;
-			public long timefrom;
-			public int timebars;
-			public double pricehigh;
-			public double pricelow;
-		}
-	}
+        public Prediction prediction;
 
-	
-	
+        public string type;
 
-	public class HistoricalStats
-	{
-		public HistoricalStat hourofday;
-		public HistoricalStat pattern;
-		public HistoricalStat symbol;
-	}
+        #endregion
 
-	public class HistoricalStat
-	{
-		public int total;
-		public double percent;
-		public int correct;
-	}
+        public class Data
+        {
+            #region Fields
+
+            public long patternendtime;
+
+            public Points points;
+
+            public double price;
+
+            #endregion
+        }
+
+        public class Metadata
+        {
+            #region Fields
+
+            public int completed;
+
+            public int direction;
+
+            public HistoricalStats historicalstats;
+
+            public int interval;
+
+            public int length;
+
+            public string pattern;
+
+            public string patterntype;
+
+            public double probability;
+
+            public Scores scores;
+
+            public string trendtype;
+
+            #endregion
+        }
+
+        public class Point
+        {
+            #region Fields
+
+            public long x0;
+
+            public long x1;
+
+            public double y0;
+
+            public double y1;
+
+            #endregion
+        }
+
+        public class Points
+        {
+            #region Fields
+
+            public Dictionary<int, long> keytime;
+
+            public Point resistance;
+
+            public Point support;
+
+            #endregion
+
+            // Note: this doesn't appear to work
+        }
+
+        public class Prediction
+        {
+            #region Fields
+
+            public double pricehigh;
+
+            public double pricelow;
+
+            public int timebars;
+
+            public long timefrom;
+
+            public long timeto;
+
+            #endregion
+        }
+
+        public class Scores
+        {
+            #region Fields
+
+            public int breakout;
+
+            public int clarity;
+
+            public int initialtrend;
+
+            public int quality;
+
+            public int uniformity;
+
+            #endregion
+        }
+    }
+
+    public class HistoricalStats
+    {
+        #region Fields
+
+        public HistoricalStat hourofday;
+
+        public HistoricalStat pattern;
+
+        public HistoricalStat symbol;
+
+        #endregion
+    }
+
+    public class HistoricalStat
+    {
+        #region Fields
+
+        public int correct;
+
+        public double percent;
+
+        public int total;
+
+        #endregion
+    }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TradeLibrary.DataModels
+﻿namespace TradeLibrary.DataModels
 {
-    enum EDirection
+    internal enum EDirection
     {
         Short,
+
         Long
     }
 }

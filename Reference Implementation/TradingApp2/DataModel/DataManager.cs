@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TradeLibrary.DataModels;
-using TradingApp2.DataModel.DataModels;
-using TradingApp2.TradeLibrary.DataModels;
-
-namespace TradingApp2.TradeLibrary
+﻿namespace TradingApp2.TradeLibrary
 {
+    using System.Collections.Generic;
+
+    using TradingApp2.DataModel.DataModels;
+
     public class DataManager
     {
-        private static Dictionary<int, AccountData> accounts = new Dictionary<int, AccountData>();
+        #region Static Fields
+
+        private static readonly Dictionary<int, AccountData> accounts = new Dictionary<int, AccountData>();
+
+        #endregion
+
+        #region Public Methods and Operators
 
         public static AccountData GetAccountData(int id)
         {
@@ -21,5 +22,7 @@ namespace TradingApp2.TradeLibrary
             }
             return accounts[id];
         }
+
+        #endregion
     }
 }

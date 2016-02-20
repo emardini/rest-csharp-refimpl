@@ -1,49 +1,42 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
-
-namespace Framework
+﻿namespace Framework
 {
+    using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Reflection;
+
     /// <summary>
-    /// This is the abstract base class for any object that provides property change notifications.  
+    ///     This is the abstract base class for any object that provides property change notifications.
     /// </summary>
     public abstract class ObservableObject : INotifyPropertyChanged
     {
-        #region Constructor
-
-        protected ObservableObject()
-        {
-        }
-
-        #endregion // Constructor
-
-        #region RaisePropertyChanged
+        #region Public Events
 
         /// <summary>
-        /// Raises this object's PropertyChanged event.
+        ///     Raised when a property on this object has a new value.
         /// </summary>
-        /// <param name="propertyName">The property that has a new value.</param>
-        protected void RaisePropertyChanged(string propertyName)
-        {
-            this.VerifyPropertyName(propertyName);
+        public event PropertyChangedEventHandler PropertyChanged;
 
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                var e = new PropertyChangedEventArgs(propertyName);
-                handler(this, e);
-            }
-        }
+        #endregion
 
-        #endregion // RaisePropertyChanged
-
-        #region Debugging Aides
+        #region Properties
 
         /// <summary>
-        /// Warns the developer if this object does not have
-        /// a public property with the specified name. This 
-        /// method does not exist in a Release build.
+        ///     Returns whether an exception is thrown, or if a Debug.Fail() is used
+        ///     when an invalid property name is passed to the VerifyPropertyName method.
+        ///     The default value is false, but subclasses used by unit tests might
+        ///     override this property's getter to return true.
+        /// </summary>
+        protected virtual bool ThrowOnInvalidPropertyName { get; private set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Warns the developer if this object does not have
+        ///     a public property with the specified name. This
+        ///     method does not exist in a Release build.
         /// </summary>
         [Conditional("DEBUG")]
         [DebuggerStepThrough]
@@ -52,8 +45,10 @@ namespace Framework
             // If you raise PropertyChanged and do not specify a property name,
             // all properties on the object are considered to be changed by the binding system.
             if (String.IsNullOrEmpty(propertyName))
+            {
                 return;
-            
+            }
+
             // Verify that the property name matches a real,  
             // public, instance property on this object.
             foreach (var prop in this.GetType().GetTypeInfo().DeclaredProperties)
@@ -63,31 +58,35 @@ namespace Framework
                     return;
                 }
             }
-            string msg = "Invalid property name: " + propertyName;
+            var msg = "Invalid property name: " + propertyName;
 
             if (this.ThrowOnInvalidPropertyName)
+            {
                 throw new ArgumentException(msg);
-            else
-                Debug.Assert(false, msg);
+            }
+            Debug.Assert(false, msg);
         }
 
-        /// <summary>
-        /// Returns whether an exception is thrown, or if a Debug.Fail() is used
-        /// when an invalid property name is passed to the VerifyPropertyName method.
-        /// The default value is false, but subclasses used by unit tests might 
-        /// override this property's getter to return true.
-        /// </summary>
-        protected virtual bool ThrowOnInvalidPropertyName { get; private set; }
+        #endregion
 
-        #endregion // Debugging Aides
-
-        #region INotifyPropertyChanged Members
+        #region Methods
 
         /// <summary>
-        /// Raised when a property on this object has a new value.
+        ///     Raises this object's PropertyChanged event.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        /// <param name="propertyName">The property that has a new value.</param>
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            this.VerifyPropertyName(propertyName);
 
-        #endregion // INotifyPropertyChanged Members
+            var handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                var e = new PropertyChangedEventArgs(propertyName);
+                handler(this, e);
+            }
+        }
+
+        #endregion
     }
 }

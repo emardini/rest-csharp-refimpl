@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.Framework
+﻿namespace OANDARestLibrary.Framework
 {
     public class CustomEventArgs<T>
     {
+        #region Constructors and Destructors
+
         public CustomEventArgs(T content)
         {
-            Item = content;
+            this.Item = content;
         }
 
+        #endregion
+
+        #region Public Properties
+
         public T Item { get; private set; }
+
+        #endregion
     }
 }

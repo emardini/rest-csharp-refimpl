@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
 {
+    using System.Collections.Generic;
+
     public class CandlesResponse
     {
-	    public string instrument;
-	    public string granularity;
+        #region Fields
+
         public List<Candle> candles;
+
+        public string granularity;
+
+        public string instrument;
+
+        #endregion
     }
 }

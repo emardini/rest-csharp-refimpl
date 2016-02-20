@@ -1,33 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConsoleTest.Testing
+﻿namespace ConsoleTest.Testing
 {
-	class TestResults
-	{
-		List<TestResult> _results = new List<TestResult>();
-		
-		public void Add(TestResult testResult)
-		{
-			_results.Add(testResult);
-		}
+    using System;
+    using System.Collections.Generic;
 
-		public bool Verify(string success, string testDescription)
-		{
-			return Verify(!string.IsNullOrEmpty(success), testDescription);
-		}
+    internal class TestResults
+    {
+        #region Fields
 
-		public bool Verify(bool success, string testDescription)
-		{
-			_results.Add(new TestResult { Success = success, Details = testDescription });
-			if (!success)
-			{
-				Console.WriteLine(success + ": " + testDescription);
-			}
-			return success;
-		}
-	}
+        private readonly List<TestResult> _results = new List<TestResult>();
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void Add(TestResult testResult)
+        {
+            this._results.Add(testResult);
+        }
+
+        public bool Verify(string success, string testDescription)
+        {
+            return this.Verify(!string.IsNullOrEmpty(success), testDescription);
+        }
+
+        public bool Verify(bool success, string testDescription)
+        {
+            this._results.Add(new TestResult { Success = success, Details = testDescription });
+            if (!success)
+            {
+                Console.WriteLine(success + ": " + testDescription);
+            }
+            return success;
+        }
+
+        #endregion
+    }
 }

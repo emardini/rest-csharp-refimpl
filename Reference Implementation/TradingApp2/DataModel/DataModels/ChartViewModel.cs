@@ -1,26 +1,34 @@
-﻿using System;
-using System.Text;
-using TradingApp2.Data;
-using TradingApp2.DataModel;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-using System.Reflection;
-
-namespace TradingApp2.TradeLibrary.DataModels
+﻿namespace TradingApp2.TradeLibrary.DataModels
 {
-    public class ChartViewModel : TradingApp2.Common.BindableBase
+    using System;
+
+    using TradingApp2.Common;
+    using TradingApp2.DataModel;
+
+    public class ChartViewModel : BindableBase
     {
+        #region Constructors and Destructors
+
         public ChartViewModel(String instrument)
         {
-            Instrument = instrument;
+            this.Instrument = instrument;
             // Note: we currently don't support changing the period
-            Period = "H1";
+            this.Period = "H1";
         }
-        
-        public string Instrument { get; private set; }
+
+        #endregion
+
+        #region Public Properties
+
         public CandleData Candles
         {
-            get { return RatesDataSource.GetCandles(Instrument, Period); }
+            get { return RatesDataSource.GetCandles(this.Instrument, this.Period); }
         }
+
+        public string Instrument { get; private set; }
+
         public string Period { get; private set; }
+
+        #endregion
     }
 }

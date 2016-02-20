@@ -1,111 +1,145 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-	public class IsOptionalAttribute : Attribute
-	{
-		public override string ToString()
-		{
-			return "Is Optional";
-		}
-	}
+    using System;
 
-	public class MaxValueAttribute : Attribute
-	{
-		public object Value { get; set; }
-		public MaxValueAttribute(int i)
-		{
-			Value = i;
-		}
-	}
-
-	public class MinValueAttribute : Attribute
-	{
-		public object Value { get; set; }
-		public MinValueAttribute(int i)
-		{
-			Value = i;
-		}
-	}
-
-	public class Instrument
+    public class IsOptionalAttribute : Attribute
     {
-		public bool HasInstrument;
-	    private string _instrument;
-        public string instrument 
-		{
-			get { return _instrument; }
-			set 
-			{ 
-				_instrument = value;
-				HasInstrument = true;
-			}
-		}
+        #region Public Methods and Operators
 
-		public bool HasdisplayName;
-		private string _displayName;
-		public string displayName
-		{
-			get { return _displayName; }
-			set
-			{
-				_displayName = value;
-				HasdisplayName = true;
-			}
-		}
+        public override string ToString()
+        {
+            return "Is Optional";
+        }
 
-		public bool Haspip;
-		private string _pip;
-		public string pip
-		{
-			get { return _pip; }
-			set
-			{
-				_pip = value;
-				Haspip = true;
-			}
-		}
+        #endregion
+    }
 
-		[IsOptional]
-		public bool HaspipLocation;
-		private int _pipLocation;
-		public int pipLocation
-		{
-			get { return _pipLocation; }
-			set
-			{
-				_pipLocation = value;
-				HaspipLocation = true;
-			}
-		}
+    public class MaxValueAttribute : Attribute
+    {
+        #region Constructors and Destructors
 
-		[IsOptional]
-		public bool HasextraPrecision;
-		private int _extraPrecision;
-		public int extraPrecision
-		{
-			get { return _extraPrecision; }
-			set
-			{
-				_extraPrecision = value;
-				HasextraPrecision = true;
-			}
-		}
+        public MaxValueAttribute(int i)
+        {
+            this.Value = i;
+        }
 
-		public bool HasmaxTradeUnits;
-		private int _maxTradeUnits;
-		public int maxTradeUnits
-		{
-			get { return _maxTradeUnits; }
-			set
-			{
-				_maxTradeUnits = value;
-				HasmaxTradeUnits = true;
-			}
-		}
+        #endregion
+
+        #region Public Properties
+
+        public object Value { get; set; }
+
+        #endregion
+    }
+
+    public class MinValueAttribute : Attribute
+    {
+        #region Constructors and Destructors
+
+        public MinValueAttribute(int i)
+        {
+            this.Value = i;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public object Value { get; set; }
+
+        #endregion
+    }
+
+    public class Instrument
+    {
+        #region Fields
+
+        public bool HasInstrument;
+
+        public bool HasdisplayName;
+
+        [IsOptional]
+        public bool HasextraPrecision;
+
+        public bool HasmaxTradeUnits;
+
+        public bool Haspip;
+
+        [IsOptional]
+        public bool HaspipLocation;
+
+        private string _displayName;
+
+        private int _extraPrecision;
+
+        private string _instrument;
+
+        private int _maxTradeUnits;
+
+        private string _pip;
+
+        private int _pipLocation;
+
+        #endregion
+
+        #region Public Properties
+
+        public string displayName
+        {
+            get { return this._displayName; }
+            set
+            {
+                this._displayName = value;
+                this.HasdisplayName = true;
+            }
+        }
+        public int extraPrecision
+        {
+            get { return this._extraPrecision; }
+            set
+            {
+                this._extraPrecision = value;
+                this.HasextraPrecision = true;
+            }
+        }
+        public string instrument
+        {
+            get { return this._instrument; }
+            set
+            {
+                this._instrument = value;
+                this.HasInstrument = true;
+            }
+        }
+
+        public int maxTradeUnits
+        {
+            get { return this._maxTradeUnits; }
+            set
+            {
+                this._maxTradeUnits = value;
+                this.HasmaxTradeUnits = true;
+            }
+        }
+        public string pip
+        {
+            get { return this._pip; }
+            set
+            {
+                this._pip = value;
+                this.Haspip = true;
+            }
+        }
+        public int pipLocation
+        {
+            get { return this._pipLocation; }
+            set
+            {
+                this._pipLocation = value;
+                this.HaspipLocation = true;
+            }
+        }
+
+        #endregion
     }
 }

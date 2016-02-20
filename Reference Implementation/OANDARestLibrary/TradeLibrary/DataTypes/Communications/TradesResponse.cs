@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
 {
+    using System.Collections.Generic;
+
     public class TradesResponse
     {
-        public List<TradeData> trades;
+        #region Fields
+
         public string nextPage;
+
+        public List<TradeData> trades;
+
+        #endregion
     }
 }

@@ -1,24 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
     public class AccountDetails
     {
+        #region Fields
+
         public int accountId;
-        public string name;
-        public double balance { get; set; }
-        public double unrealizedPl { get; set; }
-        public double nav;
-        public double realizedPl { get; set; }
-        public double marginUsed { get; set; }
-        public double marginAvail { get; set; }
-        public int openTrades;
-        public int openOrders;
-        public double marginRate;
+
         public string homecurr;
+
+        public double marginRate;
+
+        public string name;
+
+        public double nav;
+
+        public int openOrders;
+
+        public int openTrades;
+
+        #endregion
+
+        #region Public Properties
+
+        public double balance { get; set; }
+
+        public double marginAvail { get; set; }
+
+        public double marginUsed { get; set; }
+
+        public double realizedPl { get; set; }
+
+        public double unrealizedPl { get; set; }
+
+        #endregion
     }
 }

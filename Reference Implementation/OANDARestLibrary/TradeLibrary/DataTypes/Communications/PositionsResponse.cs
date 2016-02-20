@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
 {
+    using System.Collections.Generic;
+
     public class PositionsResponse
     {
+        #region Fields
+
         public List<Position> positions;
+
+        #endregion
     }
 }

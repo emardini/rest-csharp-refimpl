@@ -1,94 +1,96 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Practices.Prism.Commands;
-using TradingApp2.Data;
-using OANDARestLibrary.TradeLibrary.DataTypes.Communications;
-
-namespace TradingApp2.DataModel.DataModels
+﻿namespace TradingApp2.DataModel.DataModels
 {
-	public abstract class RequestViewModel : DataItem
-	{
-		protected RequestViewModel(string name, DataGroup group) 
-			: base(group)
-		{
-			MakeRequestCommand = DelegateCommand.FromAsyncHandler(MakeRequest, () => true);
-			_name = name;
-		}
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Threading.Tasks;
 
-		public override string UniqueId
-		{
-			get
-			{
-				return _name;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-		public override string Title
-		{
-			get
-			{
-				return _name;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-		public override string Subtitle
-		{
-			get
-			{
-				return "";
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
+    using Microsoft.Practices.Prism.Commands;
 
-		protected async Task InternalMakeRequest<T>(Func<Task<T>> func)
-		{
-			try
-			{
-				var response = await func();
-				ResponseDetails = response.ToString();
-			}
-			catch (Exception ex)
-			{
-				ResponseDetails = ex.Message;
-			}
+    using TradingApp2.Data;
 
-			this.OnPropertyChanged("ResponseDetails");
-		}
+    public abstract class RequestViewModel : DataItem
+    {
+        #region Fields
 
-		public string RequestDetails 
-		{ 
-			get
-			{
-				var details = new StringBuilder();
-				foreach (var pair in requestParams)
-				{
-					details.AppendLine(pair.Key + ": " + pair.Value);
-				}
-				return details.ToString();
-			}
-			set { throw new NotImplementedException(); } 
-		}
+        protected Dictionary<string, string> requestParams;
 
-		public string ResponseDetails { get; set; }
+        private readonly string _name;
 
-		public DelegateCommand MakeRequestCommand { get; protected set; }
+        #endregion
 
-		public abstract Task MakeRequest();
+        #region Constructors and Destructors
 
-		protected Dictionary<string, string> requestParams;
+        protected RequestViewModel(string name, DataGroup group)
+            : base(group)
+        {
+            this.MakeRequestCommand = DelegateCommand.FromAsyncHandler(this.MakeRequest, () => true);
+            this._name = name;
+        }
 
-		private string _name;
-	}
+        #endregion
+
+        #region Public Properties
+
+        public DelegateCommand MakeRequestCommand { get; protected set; }
+
+        public string RequestDetails
+        {
+            get
+            {
+                var details = new StringBuilder();
+                foreach (var pair in this.requestParams)
+                {
+                    details.AppendLine(pair.Key + ": " + pair.Value);
+                }
+                return details.ToString();
+            }
+            set { throw new NotImplementedException(); }
+        }
+
+        public string ResponseDetails { get; set; }
+
+        public override string Subtitle
+        {
+            get { return ""; }
+            set { throw new NotSupportedException(); }
+        }
+        public override string Title
+        {
+            get { return this._name; }
+            set { throw new NotSupportedException(); }
+        }
+        public override string UniqueId
+        {
+            get { return this._name; }
+            set { throw new NotSupportedException(); }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public abstract Task MakeRequest();
+
+        #endregion
+
+        #region Methods
+
+        protected async Task InternalMakeRequest<T>(Func<Task<T>> func)
+        {
+            try
+            {
+                var response = await func();
+                this.ResponseDetails = response.ToString();
+            }
+            catch (Exception ex)
+            {
+                this.ResponseDetails = ex.Message;
+            }
+
+            this.OnPropertyChanged("ResponseDetails");
+        }
+
+        #endregion
+    }
 }

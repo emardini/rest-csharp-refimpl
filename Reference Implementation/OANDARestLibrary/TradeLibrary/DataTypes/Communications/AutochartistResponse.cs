@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
+﻿namespace OANDARestLibrary.TradeLibrary.DataTypes.Communications
 {
-	public class AutochartistResponse
-	{
-		public List<Signal> signals;
-		public string provider;
-	}
+    using System.Collections.Generic;
+
+    public class AutochartistResponse
+    {
+        #region Fields
+
+        public string provider;
+
+        public List<Signal> signals;
+
+        #endregion
+    }
 }

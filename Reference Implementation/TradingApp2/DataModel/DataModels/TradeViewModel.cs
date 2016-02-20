@@ -1,66 +1,87 @@
-﻿using Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TradingApp2.Data;
-using OANDARestLibrary.TradeLibrary.DataTypes;
-
-namespace TradeLibrary.DataModels
+﻿namespace TradeLibrary.DataModels
 {
+    using System;
+
+    using OANDARestLibrary.TradeLibrary.DataTypes;
+
+    using TradingApp2.Data;
+
     public class TradeViewModel : DataItem
     {
+        #region Fields
+
+        protected TradeData _model;
+
+        #endregion
+
+        #region Constructors and Destructors
+
         public TradeViewModel(TradeData data, DataGroup group)
             : base(group)
         {
-            _model = data;
+            this._model = data;
         }
-        protected TradeData _model;
 
-        public override string UniqueId
+        #endregion
+
+        #region Public Properties
+
+        public long Id
         {
-            get
-            {
-                return Id.ToString();
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this._model.id; }
         }
-        public override string Title
+        public string Instrument
         {
-            get
-            {
-                return Side + " " + Instrument + " " + Units;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this._model.instrument; }
+        }
+        public double Price
+        {
+            get { return this._model.price; }
+        }
+        public string Side
+        {
+            get { return this._model.side; }
+        }
+        public double StopLoss
+        {
+            get { return this._model.stopLoss; }
         }
         public override string Subtitle
         {
-            get
-            {
-                return Price + " : " + TakeProfit + "/" + StopLoss;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this.Price + " : " + this.TakeProfit + "/" + this.StopLoss; }
+            set { throw new NotSupportedException(); }
+        }
+        public double TakeProfit
+        {
+            get { return this._model.takeProfit; }
+        }
+        public string Time
+        {
+            get { return this._model.time; }
+        }
+        public override string Title
+        {
+            get { return this.Side + " " + this.Instrument + " " + this.Units; }
+            set { throw new NotSupportedException(); }
+        }
+        public double TrailingAmount
+        {
+            get { return this._model.trailingAmount; }
+        }
+        public int TrailingStop
+        {
+            get { return this._model.trailingStop; }
+        }
+        public override string UniqueId
+        {
+            get { return this.Id.ToString(); }
+            set { throw new NotSupportedException(); }
+        }
+        public int Units
+        {
+            get { return this._model.units; }
         }
 
-        public long Id { get { return _model.id; } }
-        public string Side { get { return _model.side; } }
-        public string Instrument { get { return _model.instrument; } }
-        public int Units { get { return _model.units; } }
-        public string Time { get { return _model.time; } }
-        public double Price { get { return _model.price; } }
-        public double TakeProfit { get { return _model.takeProfit; } }
-        public double StopLoss { get { return _model.stopLoss; } }
-        public int TrailingStop { get { return _model.trailingStop; } }
-		public double TrailingAmount { get { return _model.trailingAmount; } }
+        #endregion
     }
 }
