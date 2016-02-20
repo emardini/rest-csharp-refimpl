@@ -124,30 +124,4 @@
             #endregion
         }
     }
-
-    public class HistoricalStats
-    {
-        #region Fields
-
-        public HistoricalStat hourofday;
-
-        public HistoricalStat pattern;
-
-        public HistoricalStat symbol;
-
-        #endregion
-    }
-
-    public class HistoricalStat
-    {
-        #region Fields
-
-        public int correct;
-
-        public double percent;
-
-        public int total;
-
-        #endregion
-    }
 }

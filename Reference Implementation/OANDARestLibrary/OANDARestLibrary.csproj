@@ -33,7 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Credentials.cs" />
+    <Compile Include="EEnvironment.cs" />
+    <Compile Include="EServer.cs" />
     <Compile Include="Framework\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rest.cs" />
@@ -46,9 +47,13 @@
     <Compile Include="TradeLibrary\DataTypes\Communications\AccountsResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\AutochartistResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\CandlesResponse.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\CommitmentsOfTraders.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\CommitmentsOfTradersResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\DeletePositionResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\DeleteTradeResponse.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\HistoricalPositionRatio.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\HprData.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\InnerHprResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\InstrumentsResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\OrdersResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\PositionsResponse.cs" />
@@ -57,18 +62,28 @@
     <Compile Include="TradeLibrary\DataTypes\Communications\Requests\AccountRequest.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\Requests\CandlesRequest.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\HistoricalPositionRatioResponse.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\Requests\ECandleFormat.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\Requests\EGranularity.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\Requests\ISmartProperty.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\Requests\OrderPostRequest.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\Requests\PricePollRequest.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\Requests\Request.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\Requests\SmartProperty.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\Response.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\SessionResponse.cs" />
+    <Compile Include="TradeLibrary\DataTypes\Communications\SpreadPeriod.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\SpreadsResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\TradesResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Communications\TransactionsResponse.cs" />
     <Compile Include="TradeLibrary\DataTypes\Event.cs" />
     <Compile Include="TradeLibrary\DataTypes\Heartbeat.cs" />
+    <Compile Include="TradeLibrary\DataTypes\HistoricalStat.cs" />
+    <Compile Include="TradeLibrary\DataTypes\HistoricalStats.cs" />
     <Compile Include="TradeLibrary\DataTypes\IHeartbeat.cs" />
     <Compile Include="TradeLibrary\DataTypes\Instrument.cs" />
+    <Compile Include="TradeLibrary\DataTypes\IsOptionalAttribute.cs" />
+    <Compile Include="TradeLibrary\DataTypes\MaxValueAttribute.cs" />
+    <Compile Include="TradeLibrary\DataTypes\MinValueAttribute.cs" />
     <Compile Include="TradeLibrary\DataTypes\Order.cs" />
     <Compile Include="TradeLibrary\DataTypes\Position.cs" />
     <Compile Include="TradeLibrary\DataTypes\Price.cs" />

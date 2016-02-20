@@ -10,15 +10,18 @@
     {
         #region Fields
 
-        private readonly List<Instrument> _instruments;
+        private readonly List<Instrument> instruments;
+
+        private readonly Rest proxy;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public RatesSession(int accountId, List<Instrument> instruments) : base(accountId)
+        public RatesSession(int accountId, List<Instrument> instruments, Rest proxy) : base(accountId)
         {
-            this._instruments = instruments;
+            this.instruments = instruments;
+            this.proxy = proxy;
         }
 
         #endregion
@@ -27,7 +30,7 @@
 
         protected override async Task<WebResponse> GetSession()
         {
-            return await Rest.StartRatesSession(this._instruments, this._accountId);
+            return await proxy.StartRatesSession(this.instruments, this.AccountId);
         }
 
         #endregion

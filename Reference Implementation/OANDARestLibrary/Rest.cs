@@ -25,6 +25,8 @@
 
         #region Fields
 
+        private readonly string accessToken;
+
         private readonly string accountUrl;
 
         private readonly string labsUrl;
@@ -34,8 +36,6 @@
         private readonly string streamingEventsUrl;
 
         private readonly string streamingRatesUrl;
-
-        private readonly string accessToken;
 
         #endregion
 
@@ -68,7 +68,7 @@
         {
             var requestString = this.accountUrl + "accounts";
 
-            return await MakeRequestAsync<AccountResponse>(requestString, "POST");
+            return await this.MakeRequestAsync<AccountResponse>(requestString, "POST");
         }
 
         /// <summary>
@@ -80,7 +80,7 @@
         public async Task<Order> DeleteOrderAsync(int accountId, long orderId)
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/orders/" + orderId;
-            return await MakeRequestAsync<Order>(requestString, "DELETE");
+            return await this.MakeRequestAsync<Order>(requestString, "DELETE");
         }
 
         /// <summary>
@@ -94,7 +94,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/positions/" + instrument;
 
-            return await MakeRequestAsync<DeletePositionResponse>(requestString, "DELETE");
+            return await this.MakeRequestAsync<DeletePositionResponse>(requestString, "DELETE");
         }
 
         /// <summary>
@@ -106,7 +106,7 @@
         public async Task<DeleteTradeResponse> DeleteTradeAsync(int accountId, long tradeId)
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/trades/" + tradeId;
-            return await MakeRequestAsync<DeleteTradeResponse>(requestString, "DELETE");
+            return await this.MakeRequestAsync<DeleteTradeResponse>(requestString, "DELETE");
         }
 
         /// <summary>
@@ -118,7 +118,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId;
 
-            var accountDetails = await MakeRequestAsync<Account>(requestString);
+            var accountDetails = await this.MakeRequestAsync<Account>(requestString);
             return accountDetails;
         }
 
@@ -135,7 +135,7 @@
                 requestString += "?username=" + user;
             }
 
-            var result = await MakeRequestAsync<AccountsResponse>(requestString);
+            var result = await this.MakeRequestAsync<AccountsResponse>(requestString);
             return result.accounts;
         }
 
@@ -149,7 +149,7 @@
         {
             var requestString = this.labsUrl + "" + "signal/autochartist";
 
-            var response = await MakeRequestAsync<AutochartistResponse>(requestString, "GET", requestParameters);
+            var response = await this.MakeRequestAsync<AutochartistResponse>(requestString, "GET", requestParameters);
 
             return response.signals;
         }
@@ -168,7 +168,7 @@
         {
             var requestString = this.labsUrl + "" + "calendar?instrument=" + instrument + "&period=" + period;
 
-            return await MakeRequestAsync<List<CalendarEvent>>(requestString);
+            return await this.MakeRequestAsync<List<CalendarEvent>>(requestString);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@
         {
             var requestString = this.ratesUrl + "" + "instruments/" + pair + "/candles?granularity=" + granularity;
 
-            var candlesResponse = await MakeRequestAsync<CandlesResponse>(requestString);
+            var candlesResponse = await this.MakeRequestAsync<CandlesResponse>(requestString);
             var candles = new List<Candle>();
             candles.AddRange(candlesResponse.candles);
 
@@ -197,7 +197,7 @@
         {
             var requestString = this.ratesUrl + request.GetRequestString();
 
-            var candlesResponse = await MakeRequestAsync<CandlesResponse>(requestString);
+            var candlesResponse = await this.MakeRequestAsync<CandlesResponse>(requestString);
             var candles = new List<Candle>();
             candles.AddRange(candlesResponse.candles);
 
@@ -217,7 +217,7 @@
         {
             var requestString = this.labsUrl + "" + "commitments_of_traders?instrument=" + instrument;
 
-            var response = await MakeRequestAsync<CommitmentsOfTradersResponse>(requestString);
+            var response = await this.MakeRequestAsync<CommitmentsOfTradersResponse>(requestString);
 
             return response.GetData();
         }
@@ -236,7 +236,7 @@
             var requestString = this.accountUrl + "accounts/" + accountId + "/alltransactions";
 
             var request = WebRequest.CreateHttp(requestString);
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
             request.Method = "GET";
             string location;
             // Phase 1: request and get the location
@@ -309,7 +309,7 @@
         {
             var requestString = this.labsUrl + "" + "historical_position_ratios?instrument=" + instrument + "&period=" + period;
 
-            var response = await MakeRequestAsync<HistoricalPositionRatioResponse>(requestString);
+            var response = await this.MakeRequestAsync<HistoricalPositionRatioResponse>(requestString);
 
             return response.GetData();
         }
@@ -336,7 +336,7 @@
                 requestString += "&instruments=" + Uri.EscapeDataString(instrumentsParam);
             }
 
-            var instrumentResponse = await MakeRequestAsync<InstrumentsResponse>(requestString);
+            var instrumentResponse = await this.MakeRequestAsync<InstrumentsResponse>(requestString);
 
             var instruments = new List<Instrument>();
             instruments.AddRange(instrumentResponse.instruments);
@@ -354,7 +354,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/orders/" + orderId;
 
-            var order = await MakeRequestAsync<Order>(requestString);
+            var order = await this.MakeRequestAsync<Order>(requestString);
 
             return order;
         }
@@ -369,7 +369,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + account + "/orders";
 
-            var ordersResponse = await MakeRequestAsync<OrdersResponse>(requestString, "GET", requestParams);
+            var ordersResponse = await this.MakeRequestAsync<OrdersResponse>(requestString, "GET", requestParams);
 
             var orders = new List<Order>();
             orders.AddRange(ordersResponse.orders);
@@ -393,7 +393,7 @@
             var requestString = this.labsUrl + "" + "orderbook_data?instrument=" + instrument + "&period=" + period;
 
             var request = WebRequest.CreateHttp(requestString);
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
             request.Headers[HttpRequestHeader.AcceptEncoding] = "gzip, deflate";
             request.Method = "GET";
 
@@ -426,7 +426,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/positions/" + instrument;
 
-            return await MakeRequestAsync<Position>(requestString);
+            return await this.MakeRequestAsync<Position>(requestString);
         }
 
         /// <summary>
@@ -438,7 +438,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/positions";
 
-            var positionResponse = await MakeRequestAsync<PositionsResponse>(requestString);
+            var positionResponse = await this.MakeRequestAsync<PositionsResponse>(requestString);
             var positions = new List<Position>();
             positions.AddRange(positionResponse.positions);
 
@@ -467,7 +467,7 @@
                 requestString += "&since=" + since;
             }
 
-            var pricesResponse = await MakeRequestAsync<PricesResponse>(requestString);
+            var pricesResponse = await this.MakeRequestAsync<PricesResponse>(requestString);
             var prices = new List<Price>();
             prices.AddRange(pricesResponse.prices);
 
@@ -490,7 +490,7 @@
             var uniqueParam = unique ? 1 : 0;
             var requestString = this.labsUrl + "" + "spreads?instrument=" + instrument + "&period=" + period + "&unique=" + uniqueParam;
 
-            var response = await MakeRequestAsync<SpreadsResponse>(requestString);
+            var response = await this.MakeRequestAsync<SpreadsResponse>(requestString);
 
             return response.GetData();
         }
@@ -505,7 +505,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/trades/" + tradeId;
 
-            var trade = await MakeRequestAsync<TradeData>(requestString);
+            var trade = await this.MakeRequestAsync<TradeData>(requestString);
 
             return trade;
         }
@@ -519,7 +519,7 @@
         public async Task<List<TradeData>> GetTradeListAsync(int account, Dictionary<string, string> requestParams = null)
         {
             var requestString = this.accountUrl + "accounts/" + account + "/trades";
-            var tradeResponse = await MakeRequestAsync<TradesResponse>(requestString, "GET", requestParams);
+            var tradeResponse = await this.MakeRequestAsync<TradesResponse>(requestString, "GET", requestParams);
 
             var trades = new List<TradeData>();
             trades.AddRange(tradeResponse.trades);
@@ -537,7 +537,7 @@
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/transactions/" + transId;
 
-            var transaction = await MakeRequestAsync<Transaction>(requestString);
+            var transaction = await this.MakeRequestAsync<Transaction>(requestString);
 
             return transaction;
         }
@@ -553,7 +553,7 @@
             var requestString = this.accountUrl + "accounts/" + accountId + "/transactions";
 
             var transactions = new List<Transaction>();
-            var dataResponse = await MakeRequestAsync<TransactionsResponse>(requestString, "GET", parameters);
+            var dataResponse = await this.MakeRequestAsync<TransactionsResponse>(requestString, "GET", parameters);
             transactions.AddRange(dataResponse.transactions);
 
             return transactions;
@@ -580,7 +580,7 @@
         public async Task<Order> PatchOrderAsync(int accountId, long orderId, Dictionary<string, string> requestParams)
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/orders/" + orderId;
-            return await MakeRequestWithBody<Order>("PATCH", requestParams, requestString);
+            return await this.MakeRequestWithBody<Order>("PATCH", requestParams, requestString);
         }
 
         /// <summary>
@@ -593,7 +593,7 @@
         public async Task<TradeData> PatchTradeAsync(int accountId, long tradeId, Dictionary<string, string> requestParams)
         {
             var requestString = this.accountUrl + "accounts/" + accountId + "/trades/" + tradeId;
-            return await MakeRequestWithBody<TradeData>("PATCH", requestParams, requestString);
+            return await this.MakeRequestWithBody<TradeData>("PATCH", requestParams, requestString);
         }
 
         /// <summary>
@@ -605,7 +605,7 @@
         public async Task<PostOrderResponse> PostOrderAsync(int account, Dictionary<string, string> requestParams)
         {
             var requestString = this.accountUrl + "accounts/" + account + "/orders";
-            return await MakeRequestWithBody<PostOrderResponse>("POST", requestParams, requestString);
+            return await this.MakeRequestWithBody<PostOrderResponse>("POST", requestParams, requestString);
         }
 
         /// <summary>
@@ -615,7 +615,7 @@
         /// <returns>the WebResponse object that can be used to retrieve the events as they stream</returns>
         public async Task<WebResponse> StartEventsSession(List<int> accountId = null)
         {
-            var requestString =  streamingEventsUrl  + "events";
+            var requestString = this.streamingEventsUrl + "events";
             if (accountId != null && accountId.Count > 0)
             {
                 var accountIds = string.Join(",", accountId);
@@ -625,7 +625,7 @@
 
             var request = WebRequest.CreateHttp(requestString);
             request.Method = "GET";
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
 
             try
             {
@@ -649,15 +649,16 @@
         /// <returns>the WebResponse object that can be used to retrieve the rates as they stream</returns>
         public async Task<WebResponse> StartRatesSession(List<Instrument> instruments, int accountId)
         {
-            var instrumentList = string.Join(",", instruments);
+            var instrumentList = string.Join(",", instruments.Select(x=> x.instrument));
 
             instrumentList = Uri.EscapeDataString(instrumentList);
 
-            var requestString = streamingRatesUrl + "prices?accountId=" + accountId + "&instruments=" + instrumentList;
+            var requestString = this.streamingRatesUrl + "prices?accountId=" + accountId + "&instruments="
+                                + instrumentList;      
 
             var request = WebRequest.CreateHttp(requestString);
             request.Method = "GET";
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
 
             try
             {
@@ -689,7 +690,7 @@
             return requestBody;
         }
 
-       private static Stream GetResponseStream(WebResponse response)
+        private static Stream GetResponseStream(WebResponse response)
         {
             var stream = response.GetResponseStream();
             if (response.Headers["Content-Encoding"] == "gzip")
@@ -710,7 +711,7 @@
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, requestString);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.accessToken);
 
             try
             {
@@ -752,7 +753,7 @@
                 requestString = requestString + "?" + parameters;
             }
             var request = WebRequest.CreateHttp(requestString);
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
             request.Headers[HttpRequestHeader.AcceptEncoding] = "gzip, deflate";
             request.Method = method;
 
@@ -788,7 +789,7 @@
             // Create the body
             var requestBody = CreateParamString(requestParams);
             var request = WebRequest.CreateHttp(requestString);
-            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + accessToken;
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + this.accessToken;
             request.Method = method;
             request.ContentType = "application/x-www-form-urlencoded";
 
@@ -817,5 +818,10 @@
         }
 
         #endregion
+
+        public bool IsSandbox()
+        {
+            return accountUrl.Contains("sandbox");
+        }
     }
 }

@@ -3,25 +3,6 @@
     using System.Collections.Generic;
     using System.Reflection;
 
-    public class CommitmentsOfTraders
-    {
-        #region Fields
-
-        public long date;
-
-        public int ncl;
-
-        public int ncs;
-
-        public int oi;
-
-        public double price;
-
-        public string unit;
-
-        #endregion
-    }
-
     public class CommitmentsOfTradersResponse
     {
         #region Fields

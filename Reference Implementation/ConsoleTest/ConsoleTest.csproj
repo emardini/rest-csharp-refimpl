@@ -48,6 +48,7 @@
     <Compile Include="Testing\CandlesTest.cs" />
     <Compile Include="Testing\LabsTest.cs" />
     <Compile Include="Testing\RestTest.cs" />
+    <Compile Include="Testing\TestResult.cs" />
     <Compile Include="Testing\TestResults.cs" />
   </ItemGroup>
   <ItemGroup>

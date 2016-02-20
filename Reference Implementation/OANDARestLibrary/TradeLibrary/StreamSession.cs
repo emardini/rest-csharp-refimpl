@@ -12,11 +12,11 @@
     {
         #region Fields
 
-        protected readonly int _accountId;
+        protected readonly int AccountId;
 
-        private WebResponse _response;
+        private WebResponse response;
 
-        private bool _shutdown;
+        private bool shutdown;
 
         #endregion
 
@@ -24,7 +24,7 @@
 
         protected StreamSession(int accountId)
         {
-            this._accountId = accountId;
+            this.AccountId = accountId;
         }
 
         #endregion
@@ -54,14 +54,14 @@
 
         public async void StartSession()
         {
-            this._shutdown = false;
-            this._response = await this.GetSession();
+            this.shutdown = false;
+            this.response = await this.GetSession();
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var serializer = new DataContractJsonSerializer(typeof(T));
-                var reader = new StreamReader(this._response.GetResponseStream());
-                while (!this._shutdown)
+                var reader = new StreamReader(this.response.GetResponseStream());
+                while (!this.shutdown)
                 {
                     var memStream = new MemoryStream();
 
@@ -83,7 +83,7 @@
 
         public void StopSession()
         {
-            this._shutdown = true;
+            this.shutdown = true;
         }
 
         #endregion

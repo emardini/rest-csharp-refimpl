@@ -8,10 +8,13 @@
 
     public class EventsSession : StreamSession<Event>
     {
+        private readonly Rest proxy;
+
         #region Constructors and Destructors
 
-        public EventsSession(int accountId) : base(accountId)
+        public EventsSession(int accountId, Rest proxy) : base(accountId)
         {
+            this.proxy = proxy;
         }
 
         #endregion
@@ -20,7 +23,7 @@
 
         protected override async Task<WebResponse> GetSession()
         {
-            return await Rest.StartEventsSession(new List<int> { this._accountId });
+            return await proxy.StartEventsSession(new List<int> { this.AccountId });
         }
 
         #endregion

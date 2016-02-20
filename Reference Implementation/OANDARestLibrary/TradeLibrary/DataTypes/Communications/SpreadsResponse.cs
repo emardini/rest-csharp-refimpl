@@ -4,21 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    public class SpreadPeriod
-    {
-        #region Fields
-
-        public double avg;
-
-        public double max;
-
-        public double min;
-
-        public long timestamp;
-
-        #endregion
-    }
-
     public class SpreadsResponse
     {
         #region Fields

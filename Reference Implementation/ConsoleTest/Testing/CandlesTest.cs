@@ -13,15 +13,18 @@
     {
         #region Fields
 
-        private readonly TestResults _results;
+        private readonly TestResults results;
+
+        private readonly Rest proxy;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public CandlesTest(TestResults results)
+        public CandlesTest(TestResults results, Rest proxy)
         {
-            this._results = results;
+            this.results = results;
+            this.proxy = proxy;
         }
 
         #endregion
@@ -33,23 +36,23 @@
             // Setup minimum requirements
             Func<CandlesRequest> request = () => new CandlesRequest { instrument = "EUR_USD" };
             // This handles the unmodified, and all defaults
-            this.RunBasicTests(request);
+            await this.RunBasicTests(request);
 
             // test count max
-            this.TestCount(request, 5000, false, "Retrieved max candles");
+            await this.TestCount(request, 5000, false, "Retrieved max candles");
             // test count max + 1
-            this.TestCount(request, 5001, true, "Exceeded max candles");
+            await this.TestCount(request, 5001, true, "Exceeded max candles");
             // test count min
-            this.TestCount(request, 1, false, "Retrieved min candles");
+            await this.TestCount(request, 1, false, "Retrieved min candles");
             // test count min - 1
-            this.TestCount(request, 0, true, "Below min candles");
+            await this.TestCount(request, 0, true, "Below min candles");
         }
 
         public async Task RunBasicTests(Func<CandlesRequest> request)
         {
             // Most basic request
-            var result = await Rest.GetCandlesAsync(request());
-            this._results.Verify(result.Count > 0, "Retrieved basic candles");
+            var result = await this.proxy.GetCandlesAsync(request());
+            this.results.Verify(result.Count > 0, "Retrieved basic candles");
 
             // Test default values
             var defaultValueProps =
@@ -66,12 +69,12 @@
 
                 try
                 {
-                    var testResult = await Rest.GetCandlesAsync(newRequest);
-                    this._results.Verify(result.SequenceEqual(testResult), "Testing default value of " + defaultValueProp.Name);
+                    var testResult = await this.proxy.GetCandlesAsync(newRequest);
+                    this.results.Verify(result.SequenceEqual(testResult), "Testing default value of " + defaultValueProp.Name);
                 }
                 catch (Exception ex)
                 {
-                    this._results.Verify(false, "Testing default value of " + defaultValueProp.Name + "\n" + ex);
+                    this.results.Verify(false, "Testing default value of " + defaultValueProp.Name + "\n" + ex);
                 }
             }
         }
@@ -86,13 +89,13 @@
             testRequest.count = count;
             if (!isError)
             {
-                var result = await Rest.GetCandlesAsync(testRequest);
-                this._results.Verify(result.Count == count, message);
+                var result = await this.proxy.GetCandlesAsync(testRequest);
+                this.results.Verify(result.Count == count, message);
             }
             else
             {
-                var stringResult = await Rest.MakeErrorRequest(testRequest);
-                this._results.Verify(stringResult != null, message);
+                var stringResult = await this.proxy.MakeErrorRequest(testRequest);
+                this.results.Verify(stringResult != null, message);
             }
         }
 

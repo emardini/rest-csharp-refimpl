@@ -1,55 +1,5 @@
 ﻿namespace OANDARestLibrary.TradeLibrary.DataTypes
 {
-    using System;
-
-    public class IsOptionalAttribute : Attribute
-    {
-        #region Public Methods and Operators
-
-        public override string ToString()
-        {
-            return "Is Optional";
-        }
-
-        #endregion
-    }
-
-    public class MaxValueAttribute : Attribute
-    {
-        #region Constructors and Destructors
-
-        public MaxValueAttribute(int i)
-        {
-            this.Value = i;
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        public object Value { get; set; }
-
-        #endregion
-    }
-
-    public class MinValueAttribute : Attribute
-    {
-        #region Constructors and Destructors
-
-        public MinValueAttribute(int i)
-        {
-            this.Value = i;
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        public object Value { get; set; }
-
-        #endregion
-    }
-
     public class Instrument
     {
         #region Fields

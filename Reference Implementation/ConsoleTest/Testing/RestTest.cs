@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -25,23 +26,28 @@
 
         #region Fields
 
-        private readonly TestResults _results = new TestResults();
+        private readonly int accountId;
 
-        private Semaphore _eventReceived;
+        private readonly Rest proxy;
 
-        private List<Instrument> _instruments;
+        private readonly TestResults results = new TestResults();
 
-        private bool _marketHalted;
+        private Semaphore eventReceived;
 
-        private Semaphore _tickReceived;
+        private List<Instrument> instruments;
+
+        private bool marketHalted;
+
+        private Semaphore tickReceived;
 
         #endregion
 
-        #region Properties
+        #region Constructors and Destructors
 
-        private int _accountId
+        public RestTest(int accountId, Rest proxy)
         {
-            get { return Credentials.GetDefaultCredentials().DefaultAccountId; }
+            this.accountId = accountId;
+            this.proxy = proxy;
         }
 
         #endregion
@@ -50,59 +56,31 @@
 
         public async Task RunTest()
         {
-            //Credentials.SetCredentials(EEnvironment.Practice, "SOME_TOKEN", 12345);
+            await this.RunInstrumentListTest();
 
-            if (Credentials.GetDefaultCredentials() == null)
-            {
-                throw new Exception("Credentials must be defined to run this test");
-            }
+            this.marketHalted = await this.IsMarketHalted();
+            // Rates
+            await this.RunRatesTest();
 
-            // if run against sandbox, with no account, then autogenerate an account
-            if (Credentials.GetDefaultCredentials().IsSandbox && Credentials.GetDefaultCredentials().DefaultAccountId == 0)
-            {
-                // Create a test account
-                var response = await Rest.CreateAccount();
-                Credentials.GetDefaultCredentials().DefaultAccountId = response.accountId;
-                Credentials.GetDefaultCredentials().Username = response.username;
-            }
+            var labs = new LabsTest(this.results, proxy);
+            await labs.Run();
 
-            if (Credentials.GetDefaultCredentials().HasServer(EServer.Rates))
-            {
-                await this.RunInstrumentListTest();
+            // Streaming Notifications
+            var eventsCheck = this.RunStreamingNotificationsTest();
 
-                this._marketHalted = await this.IsMarketHalted();
-                // Rates
-                await this.RunRatesTest();
-            }
-            if (Credentials.GetDefaultCredentials().HasServer(EServer.Labs))
-            {
-                var labs = new LabsTest(this._results);
-                await labs.Run();
-            }
-            Task eventsCheck = null;
-            if (Credentials.GetDefaultCredentials().HasServer(EServer.StreamingEvents))
-            {
-                // Streaming Notifications
-                eventsCheck = this.RunStreamingNotificationsTest();
-            }
-            if (Credentials.GetDefaultCredentials().HasServer(EServer.Account))
-            {
-                // Accounts
-                await this.RunAccountsTest();
-                // Orders
-                await this.RunOrdersTest();
-                // Trades
-                await this.RunTradesTest();
-                // Positions
-                await this.RunPositionsTest();
-                // Transaction History
-                await this.RunTransactionsTest();
-            }
-            if (Credentials.GetDefaultCredentials().HasServer(EServer.StreamingRates))
-            {
-                // Streaming Rates
-                this.RunStreamingRatesTest();
-            }
+            // Accounts
+            await this.RunAccountsTest();
+            // Orders
+            await this.RunOrdersTest();
+            // Trades
+            await this.RunTradesTest();
+            // Positions
+            await this.RunPositionsTest();
+            // Transaction History
+            await this.RunTransactionsTest();
+
+            // Streaming Rates
+            this.RunStreamingRatesTest();
 
             if (eventsCheck != null)
             {
@@ -116,26 +94,26 @@
 
         private async Task<bool> IsMarketHalted()
         {
-            var eurusd = this._instruments.Where(x => x.instrument == TestInstrument).ToList();
-            var rates = await Rest.GetRatesAsync(eurusd);
+            var eurusd = this.instruments.Where(x => x.instrument == TestInstrument).ToList();
+            var rates = await this.proxy.GetRatesAsync(eurusd);
             return rates[0].status == "halted";
         }
 
         private void OnEventReceived(Event data)
         {
             // _results.Verify the event data
-            this._results.Verify(data.transaction != null, "Event transaction received");
+            this.results.Verify(data.transaction != null, "Event transaction received");
             if (data.transaction != null)
             {
-                this._results.Verify(data.transaction.id != 0, "Event data received");
-                this._results.Verify(data.transaction.accountId != 0, "Account id received");
+                this.results.Verify(data.transaction.id != 0, "Event data received");
+                this.results.Verify(data.transaction.accountId != 0, "Account id received");
             }
-            this._eventReceived.Release();
+            this.eventReceived.Release();
         }
 
         private async Task PlaceMarketOrder()
         {
-            if (!this._marketHalted)
+            if (!this.marketHalted)
             {
                 // create new market order
                 var request = new Dictionary<string, string>
@@ -146,9 +124,9 @@
                     { "type", "market" },
                     { "price", "1.0" }
                 };
-                var response = await Rest.PostOrderAsync(this._accountId, request);
+                var response = await this.proxy.PostOrderAsync(this.accountId, request);
                 // We're assuming we don't already have a position on the sell side
-                this._results.Verify(response.tradeOpened != null && response.tradeOpened.id > 0, "Trade successfully placed");
+                this.results.Verify(response.tradeOpened != null && response.tradeOpened.id > 0, "Trade successfully placed");
             }
             else
             {
@@ -159,36 +137,30 @@
         private async Task RunAccountsTest()
         {
             // Get Account List
-            List<Account> result;
-            if (Credentials.GetDefaultCredentials().IsSandbox)
-            {
-                result = await Rest.GetAccountListAsync(Credentials.GetDefaultCredentials().Username);
-            }
-            else
-            {
-                result = await Rest.GetAccountListAsync();
-            }
-            this._results.Verify(result.Count > 0, "Accounts are returned");
+
+            var result = await this.proxy.GetAccountListAsync();
+
+            this.results.Verify(result.Count > 0, "Accounts are returned");
             foreach (var account in result)
             {
-                this._results.Verify(this.VerifyDefaultData(account), "Checking account data for " + account.accountId);
+                this.results.Verify(this.VerifyDefaultData(account), "Checking account data for " + account.accountId);
                 // Get Account Information
-                var accountDetails = await Rest.GetAccountDetailsAsync(account.accountId);
-                this._results.Verify(this.VerifyAllData(accountDetails), "Checking account details data for " + account.accountId);
+                var accountDetails = await this.proxy.GetAccountDetailsAsync(account.accountId);
+                this.results.Verify(this.VerifyAllData(accountDetails), "Checking account details data for " + account.accountId);
             }
         }
 
         private async Task RunInstrumentListTest()
         {
             // Get an instrument list (basic)
-            var result = await Rest.GetInstrumentsAsync(this._accountId);
-            this._results.Verify(result.Count > 0, "Instrument list received");
+            var result = await this.proxy.GetInstrumentsAsync(this.accountId);
+            this.results.Verify(result.Count > 0, "Instrument list received");
             foreach (var entry in result)
             {
-                this._results.Verify(this.VerifyDefaultData(entry), "Checking instrument data for " + entry.instrument);
+                this.results.Verify(this.VerifyDefaultData(entry), "Checking instrument data for " + entry.instrument);
             }
             // Store the instruments for other tests
-            this._instruments = result;
+            this.instruments = result;
         }
 
         private async Task RunOrdersTest()
@@ -208,10 +180,10 @@
                 { "expiry", expiryString },
                 { "price", "1.0" }
             };
-            var response = await Rest.PostOrderAsync(this._accountId, request);
-            this._results.Verify(response.orderOpened != null && response.orderOpened.id > 0, "Order successfully opened");
+            var response = await this.proxy.PostOrderAsync(this.accountId, request);
+            this.results.Verify(response.orderOpened != null && response.orderOpened.id > 0, "Order successfully opened");
             // Get open orders
-            var orders = await Rest.GetOrderListAsync(this._accountId);
+            var orders = await this.proxy.GetOrderListAsync(this.accountId);
 
             // Get order details
             if (orders.Count == 0)
@@ -220,44 +192,46 @@
             }
             else
             {
-                var order = await Rest.GetOrderDetailsAsync(this._accountId, orders[0].id);
-                this._results.Verify(order.id > 0, "Order details retrieved");
+                var order = await this.proxy.GetOrderDetailsAsync(this.accountId, orders[0].id);
+                this.results.Verify(order.id > 0, "Order details retrieved");
             }
 
             // Modify an Existing order
             request["units"] += 10;
-            var patchResponse = await Rest.PatchOrderAsync(this._accountId, orders[0].id, request);
-            this._results.Verify(patchResponse.id > 0 && patchResponse.id == orders[0].id && patchResponse.units.ToString() == request["units"],
+            var patchResponse = await this.proxy.PatchOrderAsync(this.accountId, orders[0].id, request);
+            this.results.Verify(
+                patchResponse.id > 0 && patchResponse.id == orders[0].id
+                && patchResponse.units.ToString(CultureInfo.InvariantCulture) == request["units"],
                 "Order patched");
 
             // close an order
-            var deletedOrder = await Rest.DeleteOrderAsync(this._accountId, orders[0].id);
-            this._results.Verify(deletedOrder.id > 0 && deletedOrder.units == patchResponse.units, "Order deleted");
+            var deletedOrder = await this.proxy.DeleteOrderAsync(this.accountId, orders[0].id);
+            this.results.Verify(deletedOrder.id > 0 && deletedOrder.units == patchResponse.units, "Order deleted");
         }
 
         private async Task RunPositionsTest()
         {
-            if (!this._marketHalted)
+            if (!this.marketHalted)
             {
                 // Make sure there's a position to test
                 await this.PlaceMarketOrder();
 
                 // get list of open positions
-                var positions = await Rest.GetPositionsAsync(this._accountId);
-                this._results.Verify(positions.Count > 0, "Positions retrieved");
+                var positions = await this.proxy.GetPositionsAsync(this.accountId);
+                this.results.Verify(positions.Count > 0, "Positions retrieved");
                 foreach (var position in positions)
                 {
                     this.VerifyPosition(position);
                 }
 
                 // get position for a given instrument
-                var onePosition = await Rest.GetPositionAsync(this._accountId, TestInstrument);
+                var onePosition = await this.proxy.GetPositionAsync(this.accountId, TestInstrument);
                 this.VerifyPosition(onePosition);
 
                 // close a whole position
-                var closePositionResponse = await Rest.DeletePositionAsync(this._accountId, TestInstrument);
-                this._results.Verify(closePositionResponse.ids.Count > 0 && closePositionResponse.instrument == TestInstrument, "Position closed");
-                this._results.Verify(closePositionResponse.totalUnits > 0 && closePositionResponse.price > 0, "Position close response seems valid");
+                var closePositionResponse = await this.proxy.DeletePositionAsync(this.accountId, TestInstrument);
+                this.results.Verify(closePositionResponse.ids.Count > 0 && closePositionResponse.instrument == TestInstrument, "Position closed");
+                this.results.Verify(closePositionResponse.totalUnits > 0 && closePositionResponse.price > 0, "Position close response seems valid");
             }
             else
             {
@@ -268,47 +242,47 @@
         private async Task RunPricesTest()
         {
             // Get a price list (basic, all instruments)
-            var result = await Rest.GetRatesAsync(this._instruments);
-            this._results.Verify(result.Count == this._instruments.Count, "Price returned for all " + this._instruments.Count + " instruments");
+            var result = await this.proxy.GetRatesAsync(this.instruments);
+            this.results.Verify(result.Count == this.instruments.Count, "Price returned for all " + this.instruments.Count + " instruments");
             foreach (var price in result)
             {
-                this._results.Verify(!string.IsNullOrEmpty(price.instrument), "price has instrument");
-                this._results.Verify(price.ask > 0 && price.bid > 0, "Seemingly valid rates for instrument " + price.instrument);
+                this.results.Verify(!string.IsNullOrEmpty(price.instrument), "price has instrument");
+                this.results.Verify(price.ask > 0 && price.bid > 0, "Seemingly valid rates for instrument " + price.instrument);
             }
         }
 
         private async Task RunRatesTest()
         {
             await this.RunPricesTest();
-            await new CandlesTest(this._results).Run();
+            await new CandlesTest(this.results, proxy).Run();
         }
 
         private Task RunStreamingNotificationsTest()
         {
-            var session = new EventsSession(this._accountId);
-            this._eventReceived = new Semaphore(0, 100);
+            var session = new EventsSession(this.accountId, proxy);
+            this.eventReceived = new Semaphore(0, 100);
             session.DataReceived += this.OnEventReceived;
             session.StartSession();
             Console.WriteLine("Starting event stream test");
             return Task.Run(() =>
             {
-                var success = this._eventReceived.WaitOne(10000);
+                var success = this.eventReceived.WaitOne(10000);
                 session.StopSession();
-                this._results.Verify(success, "Streaming events successfully received");
+                this.results.Verify(success, "Streaming events successfully received");
             }
                 );
         }
 
         private void RunStreamingRatesTest()
         {
-            var session = new RatesSession(this._accountId, this._instruments);
-            this._tickReceived = new Semaphore(0, 100);
+            var session = new RatesSession(this.accountId, this.instruments, proxy);
+            this.tickReceived = new Semaphore(0, 100);
             session.DataReceived += this.SessionOnDataReceived;
             session.StartSession();
             Console.WriteLine("Starting rate stream test");
-            var success = this._tickReceived.WaitOne(10000);
+            var success = this.tickReceived.WaitOne(10000);
             session.StopSession();
-            this._results.Verify(success, "Streaming rates successfully received");
+            this.results.Verify(success, "Streaming rates successfully received");
         }
 
         private async Task RunTradesTest()
@@ -317,32 +291,32 @@
             await this.PlaceMarketOrder();
 
             // get list of open trades
-            var openTrades = await Rest.GetTradeListAsync(this._accountId);
-            this._results.Verify(openTrades.Count > 0 && openTrades[0].id > 0, "Trades list retrieved");
+            var openTrades = await this.proxy.GetTradeListAsync(this.accountId);
+            this.results.Verify(openTrades.Count > 0 && openTrades[0].id > 0, "Trades list retrieved");
             if (openTrades.Count > 0)
             {
                 // get details for a trade
-                var tradeDetails = await Rest.GetTradeDetailsAsync(this._accountId, openTrades[0].id);
-                this._results.Verify(tradeDetails.id > 0 && tradeDetails.price > 0 && tradeDetails.units != 0, "Trade details retrieved");
+                var tradeDetails = await this.proxy.GetTradeDetailsAsync(this.accountId, openTrades[0].id);
+                this.results.Verify(tradeDetails.id > 0 && tradeDetails.price > 0 && tradeDetails.units != 0, "Trade details retrieved");
 
                 // Modify an open trade
                 var request = new Dictionary<string, string>
                 {
                     { "stopLoss", "0.4" }
                 };
-                var modifiedDetails = await Rest.PatchTradeAsync(this._accountId, openTrades[0].id, request);
-                this._results.Verify(modifiedDetails.id > 0 && Math.Abs(modifiedDetails.stopLoss - 0.4) < float.Epsilon, "Trade modified");
+                var modifiedDetails = await this.proxy.PatchTradeAsync(this.accountId, openTrades[0].id, request);
+                this.results.Verify(modifiedDetails.id > 0 && Math.Abs(modifiedDetails.stopLoss - 0.4) < float.Epsilon, "Trade modified");
 
-                if (!this._marketHalted)
+                if (!this.marketHalted)
                 {
                     // close an open trade
-                    var closedDetails = await Rest.DeleteTradeAsync(this._accountId, openTrades[0].id);
-                    this._results.Verify(closedDetails.id > 0, "Trade closed");
-                    this._results.Verify(!string.IsNullOrEmpty(closedDetails.time), "Trade close details time");
-                    this._results.Verify(!string.IsNullOrEmpty(closedDetails.side), "Trade close details side");
-                    this._results.Verify(!string.IsNullOrEmpty(closedDetails.instrument), "Trade close details instrument");
-                    this._results.Verify(closedDetails.price > 0, "Trade close details price");
-                    this._results.Verify(closedDetails.profit != 0, "Trade close details profit");
+                    var closedDetails = await this.proxy.DeleteTradeAsync(this.accountId, openTrades[0].id);
+                    this.results.Verify(closedDetails.id > 0, "Trade closed");
+                    this.results.Verify(!string.IsNullOrEmpty(closedDetails.time), "Trade close details time");
+                    this.results.Verify(!string.IsNullOrEmpty(closedDetails.side), "Trade close details side");
+                    this.results.Verify(!string.IsNullOrEmpty(closedDetails.instrument), "Trade close details instrument");
+                    this.results.Verify(closedDetails.price > 0, "Trade close details price");
+                    this.results.Verify(closedDetails.profit != 0, "Trade close details profit");
                 }
                 else
                 {
@@ -362,45 +336,45 @@
             // transaction tests
 
             // Get transaction history basic
-            var result = await Rest.GetTransactionListAsync(this._accountId);
-            this._results.Verify(result.Count > 0, "Recent transactions retrieved");
+            var result = await this.proxy.GetTransactionListAsync(this.accountId);
+            this.results.Verify(result.Count > 0, "Recent transactions retrieved");
             foreach (var transaction in result)
             {
-                this._results.Verify(transaction.id > 0, "Transaction has id");
-                this._results.Verify(!string.IsNullOrEmpty(transaction.type), "Transation has type");
+                this.results.Verify(transaction.id > 0, "Transaction has id");
+                this.results.Verify(!string.IsNullOrEmpty(transaction.type), "Transation has type");
             }
-            var parameters = new Dictionary<string, string> { { "count", "500" } };
-            result = await Rest.GetTransactionListAsync(this._accountId, parameters);
-            this._results.Verify(result.Count == 500, "Recent transactions retrieved");
+            var parameters = new Dictionary<string, string> { { "count", "500" }, {"intrument", "EUR_USD"} };
+            result = await this.proxy.GetTransactionListAsync(this.accountId, parameters);
+            this.results.Verify(result.Count == 500, "Recent transactions retrieved");
             foreach (var transaction in result)
             {
-                this._results.Verify(transaction.id > 0, "Transaction has id");
-                this._results.Verify(!string.IsNullOrEmpty(transaction.type), "Transation has type");
+                this.results.Verify(transaction.id > 0, "Transaction has id");
+                this.results.Verify(!string.IsNullOrEmpty(transaction.type), "Transation has type");
             }
 
             // Get details for a transaction
-            var trans = await Rest.GetTransactionDetailsAsync(this._accountId, result[0].id);
-            this._results.Verify(trans.id == result[0].id, "Transaction details retrieved");
+            var trans = await this.proxy.GetTransactionDetailsAsync(this.accountId, result[0].id);
+            this.results.Verify(trans.id == result[0].id, "Transaction details retrieved");
 
-            if (!Credentials.GetDefaultCredentials().IsSandbox)
+            if (this.proxy.IsSandbox())
             {
                 // Not available on sandbox
                 // Get Full account history
-                var fullHistory = await Rest.GetFullTransactionHistoryAsync(this._accountId);
-                this._results.Verify(fullHistory.Count > 0, "Full transaction history retrieved");
+                var fullHistory = await this.proxy.GetFullTransactionHistoryAsync(this.accountId);
+                this.results.Verify(fullHistory.Count > 0, "Full transaction history retrieved");
             }
         }
 
         private void SessionOnDataReceived(RateStreamResponse data)
         {
             // _results.Verify the tick data
-            this._results.Verify(data.tick != null, "Streaming Tick received");
+            this.results.Verify(data.tick != null, "Streaming Tick received");
             if (data.tick != null)
             {
-                this._results.Verify(data.tick.ask > 0 && data.tick.bid > 0, "Streaming tick has bid/ask");
-                this._results.Verify(!string.IsNullOrEmpty(data.tick.instrument), "Streaming tick has instrument");
+                this.results.Verify(data.tick.ask > 0 && data.tick.bid > 0, "Streaming tick has bid/ask");
+                this.results.Verify(!string.IsNullOrEmpty(data.tick.instrument), "Streaming tick has instrument");
             }
-            this._tickReceived.Release();
+            this.tickReceived.Release();
         }
 
         private bool VerifyAllData<T>(T entry)
@@ -435,22 +409,11 @@
 
         private void VerifyPosition(Position position)
         {
-            this._results.Verify(position.units > 0, "Position has units");
-            this._results.Verify(position.avgPrice > 0, "Position has avgPrice");
-            this._results.Verify(!string.IsNullOrEmpty(position.side), "Position has direction");
-            this._results.Verify(!string.IsNullOrEmpty(position.instrument), "Position has instrument");
+            this.results.Verify(position.units > 0, "Position has units");
+            this.results.Verify(position.avgPrice > 0, "Position has avgPrice");
+            this.results.Verify(!string.IsNullOrEmpty(position.side), "Position has direction");
+            this.results.Verify(!string.IsNullOrEmpty(position.instrument), "Position has instrument");
         }
-
-        #endregion
-    }
-
-    internal class TestResult
-    {
-        #region Public Properties
-
-        public string Details { get; set; }
-
-        public bool Success { get; set; }
 
         #endregion
     }
